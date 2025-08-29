@@ -4,20 +4,164 @@
     <meta charset="UTF-8">
     <title>Mercury</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        #chatbox {
-            width: 80%;
-            height: 300px;
-            border: 1px solid #ccc;
-            margin: 10px auto;
-            padding: 10px;
-            overflow-y: auto;
-            background: #f9f9f9;
-            text-align: left;
-        }
-        .user { color: blue; }
-        .bot { color: green; }
-    </style>
+/* ===== Global Styles ===== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f6fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    color: #2f3640;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+/* ===== Chatbox ===== */
+#chatbox {
+    width: 80%;
+    max-width: 700px;
+    height: 450px;
+    border-radius: 15px;
+    border: 1px solid #dcdde1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+#chatbox p {
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    max-width: 70%;
+    word-wrap: break-word;
+    position: relative;
+    line-height: 1.4;
+    font-size: 15px;
+}
+
+/* User Messages */
+.user {
+    background: #4cd137;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+}
+
+.bot {
+    background: #f5f6fa;
+    color: #2f3640;
+    border: 1px solid #dcdde1;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+}
+
+/* ===== Input Section ===== */
+.input-area {
+    width: 80%;
+    max-width: 700px;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 1px solid #dcdde1;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+    border-color: #487eb0;
+    box-shadow: 0 0 8px rgba(72, 126, 176, 0.3);
+}
+
+button {
+    padding: 12px 25px;
+    border-radius: 25px;
+    border: none;
+    background: #487eb0;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #40739e;
+}
+
+/* ===== Dropdowns ===== */
+select {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #dcdde1;
+    font-size: 14px;
+}
+
+/* Labels */
+label {
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+/* ===== Scrollbar Styling ===== */
+#chatbox::-webkit-scrollbar {
+    width: 8px;
+}
+
+#chatbox::-webkit-scrollbar-track {
+    background: #f5f6fa;
+    border-radius: 10px;
+}
+
+#chatbox::-webkit-scrollbar-thumb {
+    background: #dcdde1;
+    border-radius: 10px;
+}
+
+#chatbox::-webkit-scrollbar-thumb:hover {
+    background: #b2bec3;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    #chatbox {
+        width: 95%;
+        height: 350px;
+    }
+
+    .input-area {
+        width: 95%;
+    }
+
+    input[type="text"] {
+        flex: 100%;
+    }
+
+    button {
+        flex: none;
+        width: 48%;
+    }
+}
+</style>
+
+
 </head>
 <body>
     <h2>Mercury</h2>
