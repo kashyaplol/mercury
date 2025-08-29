@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🌍 SDG10 Multilingual Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #chatbox {
+            width: 80%;
+            height: 300px;
+            border: 1px solid #ccc;
+            margin: 10px auto;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            text-align: left;
+        }
+        .user { color: blue; }
+        .bot { color: green; }
+    </style>
+</head>
+<body>
+    <h2>🌍 SDG10 Multilingual Chatbot</h2>
+
+    <div id="chatbox"></div>
+
+    <!-- Language selection -->
+    <label>Input Language:</label>
+    <select id="inputLang">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="te">Telugu</option>
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+    </select>
+
+    <label>Output Language:</label>
+    <select id="outputLang">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="te">Telugu</option>
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+    </select>
+
+    <label>Voice:</label>
+    <select id="voiceSelect"></select>
+
+    <br><br>
+
+    <!-- Message input -->
+    <input type="text" id="textInput" placeholder="Type a message..." style="width:60%;">
+    <button id="send">Send</button>
+    <button id="speak">🎤 Speak</button>
+
+    <script>
+        // =========================
+        // 1. Send message to Flask
+        // =========================
+        function sendMessage(userMessage) {
+            if (!userMessage) return;
+
+            let inputLang = document.getElementById("inputLang").value;
+            let outputLang = document.getElementById("outputLang").value;
+
+            let chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += "<p class='user'><b>You:</b> " + userMessage + "</p>";
+
+            fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: userMessage,
+                    input_lang: inputLang,
+                    output_lang: outputLang
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let botReply = data.reply;
+                chatbox.innerHTML += "<p class='bot'><b>Bot:</b> " + botReply + "</p>";
+                chatbox.scrollTop = chatbox.scrollHeight;
+
+                // 🔊 Speak in chosen voice
+                speakBotReply(botReply, outputLang);
+            })
+            .catch(error => console.error("Error:", error));
+
+            document.getElementById("textInput").value = "";
+        }
+
+        document.getElementById("send").addEventListener("click", function() {
+            let userMessage = document.getElementById("textInput").value.trim();
+            sendMessage(userMessage);
+        });
+
+        // =========================
+        // 2. Speech Recognition 🎤
+        // =========================
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            document.getElementById("speak").addEventListener("click", () => {
+                recognition.lang = document.getElementById("inputLang").value;
+                recognition.start();
+            });
+
+            recognition.onresult = (event) => {
+                let spokenText = event.results[0][0].transcript;
+                document.getElementById("textInput").value = spokenText;
+                sendMessage(spokenText);
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+            };
+        } else {
+            alert("Speech recognition not supported in this browser. Try Chrome!");
+        }
+
+        // =========================
+        // 3. Smart Text-to-Speech 🔊
+        // =========================
+        let voices = [];
+
+        function loadVoices() {
+            voices = speechSynthesis.getVoices();
+            let voiceSelect = document.getElementById("voiceSelect");
+            voiceSelect.innerHTML = "";
+
+            voices.forEach((voice, index) => {
+                let option = document.createElement("option");
+                option.value = index;
+                option.textContent = voice.name + " (" + voice.lang + ")";
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function speakBotReply(text, lang) {
+            if ('speechSynthesis' in window) {
+                let utterance = new SpeechSynthesisUtterance(text);
+
+                let selectedVoiceIndex = document.getElementById("voiceSelect").value;
+                if (voices[selectedVoiceIndex]) {
+                    utterance.voice = voices[selectedVoiceIndex];
+                } else {
+                    utterance.lang = lang; // fallback if no voice selected
+                }
+
+                speechSynthesis.speak(utterance);
+            } else {
+                console.log("Text-to-Speech not supported.");
+            }
+        }
+    </script>
+</body>
+</html>
